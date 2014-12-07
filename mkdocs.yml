@@ -1,0 +1,5 @@
+site_name: nibbler documentation
+pages:
+- [index.md, Home, "Home"]
+theme: readthedocs
+markdown_extensions: [smarty, codehilite]
