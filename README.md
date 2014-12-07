@@ -11,7 +11,7 @@ the [RxJava](https://github.com/ReactiveX/RxJava) adapter for [Netty](http://net
 Download
 ========
 
-The current version is available in the [maven central repository](http://search.maven.org/#search%7Cga%7C1%7Cbrainslug)
+The current version is available in the [maven central repository](http://search.maven.org/#search%7Cga%7C1%7Cnibbler)
 
 Hello World
 ===========
