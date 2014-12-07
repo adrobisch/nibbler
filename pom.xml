@@ -4,7 +4,7 @@
 
     <groupId>de.androbit</groupId>
     <artifactId>nibbler</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>nibbler root pom</name>
     <description>nibbler http micro-service library</description>
@@ -27,7 +27,7 @@
         <connection>scm:git:git://github.com/adrobisch/nibbler.git</connection>
         <developerConnection>scm:git:git@github.com:adrobisch/nibbler.git</developerConnection>
         <url>http://github.com/adrobisch/nibbler</url>
-        <tag>nibbler-0.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
