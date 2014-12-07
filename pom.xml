@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.androbit</groupId>
     <artifactId>nibbler</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
     <packaging>pom</packaging>
     <name>nibbler root pom</name>
     <description>nibbler http micro-service library</description>
@@ -29,7 +27,7 @@
         <connection>scm:git:git://github.com/adrobisch/nibbler.git</connection>
         <developerConnection>scm:git:git@github.com:adrobisch/nibbler.git</developerConnection>
         <url>http://github.com/adrobisch/nibbler</url>
-        <tag>HEAD</tag>
+        <tag>nibbler-0.1</tag>
     </scm>
 
     <developers>
