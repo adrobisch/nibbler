@@ -1,7 +1,7 @@
 ![nibbler](images/nibbler_big.png)
 
-nibbler
-=======
+Synopsis
+========
 
 nibbler is a HTTP *micro*-service DSL + library for **Java 8** or higher based on [RxNetty](https://github.com/ReactiveX/RxNetty),
 the [RxJava](https://github.com/ReactiveX/RxJava) adapter for [Netty](http://netty.io/) developed by Netflix.
