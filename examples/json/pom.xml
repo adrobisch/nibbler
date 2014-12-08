@@ -7,17 +7,21 @@
     <parent>
         <groupId>de.androbit</groupId>
         <artifactId>nibbler-examples</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>nibbler-example-json</artifactId>
-    <version>1.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
             <groupId>de.androbit</groupId>
+            <artifactId>nibbler-netty</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.androbit</groupId>
             <artifactId>nibbler-json</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

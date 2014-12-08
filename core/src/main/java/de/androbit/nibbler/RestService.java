@@ -12,6 +12,10 @@ public class RestService {
     this.paths = paths;
   }
 
+  public List<PathDefinition> getPaths() {
+    return paths;
+  }
+
   @Override
   public String toString() {
     return "RestService{" +

@@ -2,10 +2,7 @@ package de.androbit.nibbler.netty;
 
 import de.androbit.nibbler.converter.ContentConverters;
 import de.androbit.nibbler.converter.TypedInput;
-import de.androbit.nibbler.http.Header;
-import de.androbit.nibbler.http.MediaType;
-import de.androbit.nibbler.http.Params;
-import de.androbit.nibbler.http.RestRequest;
+import de.androbit.nibbler.http.*;
 import io.netty.buffer.ByteBuf;
 import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 
@@ -27,6 +24,16 @@ public class NettyRequestWrapper implements RestRequest {
     this.request = request;
     this.converters = converters;
     this.content = content;
+  }
+
+  @Override
+  public RestHttpMethod method() {
+    return RestHttpMethod.valueOf(request.getHttpMethod().name());
+  }
+
+  @Override
+  public String getPath() {
+    return request.getPath();
   }
 
   @Override

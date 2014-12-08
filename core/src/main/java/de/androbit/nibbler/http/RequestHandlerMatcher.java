@@ -1,14 +1,9 @@
-package de.androbit.nibbler.netty;
+package de.androbit.nibbler.http;
 
 import de.androbit.nibbler.dsl.HandlerDefinition;
 import de.androbit.nibbler.dsl.PathDefinition;
-import de.androbit.nibbler.http.Header;
-import de.androbit.nibbler.http.RestHttpMethod;
 import de.androbit.nibbler.http.uri.PathMatchResult;
 import de.androbit.nibbler.http.uri.PathMatcher;
-import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.http.HttpMethod;
-import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,21 +39,19 @@ public class RequestHandlerMatcher {
     this.pathDefinitions = pathDefinitions;
   }
 
-  public MatchingHandlers getMatchingHandlers(HttpServerRequest<ByteBuf> request) {
-    Optional<String> acceptHeader = Optional.of(request.getHeaders().getHeader(Header.Accept.getName()));
+  public MatchingHandlers getMatchingHandlers(RestRequest request) {
+    Optional<String> acceptHeader = Optional.ofNullable(request.header(Header.Accept.getName()));
 
-    List<FoundHandlerDefinition> methodHandlers = getPathHandlers(request)
-      .flatMap(matchingMethodHandlers(request.getHttpMethod()))
+    List<FoundHandlerDefinition> methodHandlers = getPathHandlers(request.getPath())
+      .flatMap(matchingMethodHandlers(request.method()))
       .collect(Collectors.toList());
 
     Optional<FoundHandlerDefinition> contentHandler = getHandlerForContentType(acceptHeader, methodHandlers);
     return new MatchingHandlers(methodHandlers, contentHandler);
   }
 
-  Function<MatchingPathDefinition, Stream<? extends FoundHandlerDefinition>> matchingMethodHandlers(HttpMethod httpMethod){
+  Function<MatchingPathDefinition, Stream<? extends FoundHandlerDefinition>> matchingMethodHandlers(RestHttpMethod restHttpMethod){
     return pathDefinition -> {
-      RestHttpMethod restHttpMethod = RestHttpMethod.valueOf(httpMethod.name());
-
       return pathDefinition.getPathDefinition()
         .getMethodHandlers()
         .get(restHttpMethod)
@@ -91,11 +84,11 @@ public class RequestHandlerMatcher {
       acceptHeader.get().contains(handler.getHandledType().get().contentType());
   }
 
-  private Stream<MatchingPathDefinition> getPathHandlers(HttpServerRequest<ByteBuf> request) {
+  private Stream<MatchingPathDefinition> getPathHandlers(String requestPath) {
     return pathDefinitions
       .stream()
       .flatMap(path -> {
-        PathMatchResult matchResult = pathMatcher.match(path.getPathTemplate(), request.getPath());
+        PathMatchResult matchResult = pathMatcher.match(path.getPathTemplate(), requestPath);
         if (matchResult.isMatch()) {
           return Stream.of(new MatchingPathDefinition(path, matchResult));
         }else {

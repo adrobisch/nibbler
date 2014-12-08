@@ -1,4 +1,4 @@
-package de.androbit.nibbler.rest;
+package de.androbit.nibbler.test;
 
 import org.junit.Test;
 

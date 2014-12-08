@@ -1,9 +1,9 @@
-package de.androbit.nibbler.netty;
+package de.androbit.nibbler.http;
 
 import de.androbit.nibbler.dsl.HandlerDefinition;
 import de.androbit.nibbler.http.uri.PathMatchResult;
 
-class FoundHandlerDefinition {
+public class FoundHandlerDefinition {
   PathMatchResult matchResult;
   HandlerDefinition handlerDefinition;
 

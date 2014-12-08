@@ -43,38 +43,38 @@ public class NettyServiceRequestHandler implements RequestHandler<ByteBuf, ByteB
     }
   }
 
-  Func1<ByteBuf, Observable<? extends Void>> processRequest(HttpServerRequest<ByteBuf> request, HttpServerResponse<ByteBuf> response)  {
+  Func1<ByteBuf, Observable<? extends Void>> processRequest(HttpServerRequest<ByteBuf> nettyRequest, HttpServerResponse<ByteBuf> response)  {
     return (byteBuf) -> {
+      NettyRequestWrapper request = new NettyRequestWrapper(nettyRequest, byteBuf, converters);
       RequestHandlerMatcher.MatchingHandlers matchingHandlers = handlerFinder.getMatchingHandlers(request);
-
       if (matchingHandlers.getMethodHandlers().isEmpty()) {
-        return respondWithMethodNotAllowed(request, response);
+        return respondWithMethodNotAllowed(nettyRequest, response);
       } else if (matchingHandlers.getContentHandler().isPresent()) {
-          return respondWithServiceResponse(request, response, byteBuf, matchingHandlers.getContentHandler().get());
+          return respondWithServiceResponse(request, response, matchingHandlers.getContentHandler().get());
       } else {
         return respondWithNotAcceptable(response);
       }
     };
   }
 
-  private RestResponse handleService(NettyRequestWrapper requestWrapper, HandlerDefinition requestHandler) {
+  private RestResponse handleService(RestRequest request, HandlerDefinition requestHandler) {
     RestResponse defaultResponse = new DefaultRestResponse(HttpResponseStatus.OK.code(), new HashMap<>(), false);
-    RestResponse beforeResponse = transform(requestHandler.getBeforeHandlers(), requestWrapper, defaultResponse);
+    RestResponse beforeResponse = transform(requestHandler.getBeforeHandlers(), request, defaultResponse);
     if (beforeResponse.isImmediate()) {
       return beforeResponse;
     } else {
-      return transform(requestHandler.getAfterHandlers(), requestWrapper, executeHandler(requestWrapper, requestHandler, beforeResponse));
+      return transform(requestHandler.getAfterHandlers(), request, executeHandler(request, requestHandler, beforeResponse));
     }
   }
 
-  private RestResponse executeHandler(NettyRequestWrapper requestWrapper, HandlerDefinition requestHandler, RestResponse beforeResponse) {
-   return requestHandler.getRequestHandler().handle(requestWrapper, beforeResponse);
+  private RestResponse executeHandler(RestRequest request, HandlerDefinition requestHandler, RestResponse beforeResponse) {
+   return requestHandler.getRequestHandler().handle(request, beforeResponse);
   }
 
-  public RestResponse transform(List<RestRequestHandler> transformers, NettyRequestWrapper requestWrapper, final RestResponse initialResponse) {
+  public RestResponse transform(List<RestRequestHandler> transformers, RestRequest request, final RestResponse initialResponse) {
     RestResponse transformedResponse = initialResponse;
     for (RestRequestHandler transformer: transformers) {
-      transformedResponse = transformer.handle(requestWrapper, transformedResponse);
+      transformedResponse = transformer.handle(request, transformedResponse);
       if (transformedResponse.isImmediate()) {
         return transformedResponse;
       }
@@ -82,13 +82,11 @@ public class NettyServiceRequestHandler implements RequestHandler<ByteBuf, ByteB
     return transformedResponse;
   }
 
-  private Observable<? extends Void> respondWithServiceResponse(HttpServerRequest<ByteBuf> request, HttpServerResponse<ByteBuf> response, ByteBuf bodyBytes, FoundHandlerDefinition handlerDefinition) {
-    NettyRequestWrapper requestWrapper = new NettyRequestWrapper(request, bodyBytes, converters)
-      .withPathParams(handlerDefinition.getMatchResult().getPathParams());
-
+  private Observable<? extends Void> respondWithServiceResponse(NettyRequestWrapper request, HttpServerResponse<ByteBuf> response, FoundHandlerDefinition handlerDefinition) {
     HandlerDefinition currentHandler = handlerDefinition.getHandlerDefinition();
-    RestResponse handlerResponse = handleService(requestWrapper, currentHandler);
+    request.withPathParams(handlerDefinition.getMatchResult().getPathParams());
 
+    RestResponse handlerResponse = handleService(request, currentHandler);
     responseWriter.writeResponse(handlerResponse, response, currentHandler);
 
     return response.close(false);
