@@ -14,6 +14,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>1.0.0-rc.10</version>
+        </dependency>
+        <dependency>
             <groupId>de.androbit</groupId>
             <artifactId>nibbler-netty</artifactId>
             <version>${project.version}</version>

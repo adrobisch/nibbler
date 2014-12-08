@@ -32,8 +32,8 @@ public class NettyRequestWrapper implements RestRequest {
   }
 
   @Override
-  public String getPath() {
-    return request.getPath();
+  public RequestPath path() {
+    return new RequestPath(request.getPath());
   }
 
   @Override

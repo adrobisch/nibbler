@@ -42,7 +42,7 @@ public class RequestHandlerMatcher {
   public MatchingHandlers getMatchingHandlers(RestRequest request) {
     Optional<String> acceptHeader = Optional.ofNullable(request.header(Header.Accept.getName()));
 
-    List<FoundHandlerDefinition> methodHandlers = getPathHandlers(request.getPath())
+    List<FoundHandlerDefinition> methodHandlers = getPathHandlers(request.path().value())
       .flatMap(matchingMethodHandlers(request.method()))
       .collect(Collectors.toList());
 

@@ -2,12 +2,10 @@ package de.androbit.nibbler.http;
 
 import de.androbit.nibbler.converter.TypedInput;
 
-import java.util.Map;
-
 public interface RestRequest {
   RestHttpMethod method();
 
-  String getPath();
+  RequestPath path();
 
   Params pathParams();
   Params queryParams();

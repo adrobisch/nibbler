@@ -48,7 +48,8 @@ public class NettyHttpServer implements RestHttpServer {
 
   @Override
   public void startAndWait(RestHttpServerConfiguration configuration) {
-    nettyServer = createServer(configuration).start();
+    nettyServer = createServer(configuration);
+    nettyServer.startAndWait();
   }
 
   private void logServices(List<RestService> restServices) {
