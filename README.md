@@ -17,9 +17,10 @@ Hello World
 ===========
 
 ```java
-import de.androbit.nibbler.RestHttpServer;
+import de.androbit.nibbler.RestHttpServerConfiguration;
 import de.androbit.nibbler.RestServiceBuilder;
 import de.androbit.nibbler.json.JacksonConverter;
+import de.androbit.nibbler.netty.NettyHttpServer;
 
 import static de.androbit.nibbler.json.JsonSupport.json;
 
@@ -32,10 +33,12 @@ public class JsonExample extends RestServiceBuilder {
   }
 
   public static void main(String[] args) {
-    new RestHttpServer()
+    RestHttpServerConfiguration restHttpServerConfiguration = new RestHttpServerConfiguration()
       .withService(new JsonExample())
-      .withConverter(new JacksonConverter())
-      .startAndWait();
+      .withConverter(new JacksonConverter());
+
+    new NettyHttpServer()
+      .startAndWait(restHttpServerConfiguration);
   }
 }
 ```
