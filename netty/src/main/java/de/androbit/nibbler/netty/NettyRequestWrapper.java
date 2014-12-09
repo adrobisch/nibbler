@@ -80,7 +80,7 @@ public class NettyRequestWrapper implements RestRequest {
 
   MediaType getContentType() {
     String header = header(Header.ContentType.name());
-    return header != null ? MediaType.valueOf(header) : MediaType.APPLICATION_OCTECT_STREAM;
+    return header != null ? MediaType.valueOf(header) : MediaType.APPLICATION_OCTET_STREAM;
   }
 
   public NettyRequestWrapper withPathParams(Map<String, String> pathParams) {

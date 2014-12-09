@@ -15,21 +15,20 @@ import rx.Observable;
 import rx.functions.Func1;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 
 public class NettyServiceRequestHandler implements RequestHandler<ByteBuf, ByteBuf> {
 
   final RequestHandlerMatcher handlerFinder;
   final ContentConverters converters;
-  final ResponseWriter responseWriter;
+  final NettyResponseWriter responseWriter;
 
   Logger logger = LoggerFactory.getLogger(NettyServiceRequestHandler.class);
 
   public NettyServiceRequestHandler(RequestHandlerMatcher handlerFinder, ContentConverters converters) {
     this.handlerFinder = handlerFinder;
     this.converters = converters;
-    this.responseWriter = new ResponseWriter(converters);
+    this.responseWriter = new NettyResponseWriter(converters);
   }
 
   @Override
@@ -47,10 +46,12 @@ public class NettyServiceRequestHandler implements RequestHandler<ByteBuf, ByteB
     return (byteBuf) -> {
       NettyRequestWrapper request = new NettyRequestWrapper(nettyRequest, byteBuf, converters);
       RequestHandlerMatcher.MatchingHandlers matchingHandlers = handlerFinder.getMatchingHandlers(request);
-      if (matchingHandlers.getMethodHandlers().isEmpty()) {
+      if (matchingHandlers.getContentHandler().isPresent()) {
+        return respondWithServiceResponse(request, response, matchingHandlers.getContentHandler().get());
+      } else if (matchingHandlers.getMatchingPathHandlers().isEmpty()) {
+        return respondWithNotFound(nettyRequest, response);
+      } else if (matchingHandlers.getMethodHandlers().isEmpty()) {
         return respondWithMethodNotAllowed(nettyRequest, response);
-      } else if (matchingHandlers.getContentHandler().isPresent()) {
-          return respondWithServiceResponse(request, response, matchingHandlers.getContentHandler().get());
       } else {
         return respondWithNotAcceptable(response);
       }
@@ -58,28 +59,8 @@ public class NettyServiceRequestHandler implements RequestHandler<ByteBuf, ByteB
   }
 
   private RestResponse handleService(RestRequest request, HandlerDefinition requestHandler) {
-    RestResponse defaultResponse = new DefaultRestResponse(HttpResponseStatus.OK.code(), new HashMap<>(), false);
-    RestResponse beforeResponse = transform(requestHandler.getBeforeHandlers(), request, defaultResponse);
-    if (beforeResponse.isImmediate()) {
-      return beforeResponse;
-    } else {
-      return transform(requestHandler.getAfterHandlers(), request, executeHandler(request, requestHandler, beforeResponse));
-    }
-  }
-
-  private RestResponse executeHandler(RestRequest request, HandlerDefinition requestHandler, RestResponse beforeResponse) {
-   return requestHandler.getRequestHandler().handle(request, beforeResponse);
-  }
-
-  public RestResponse transform(List<RestRequestHandler> transformers, RestRequest request, final RestResponse initialResponse) {
-    RestResponse transformedResponse = initialResponse;
-    for (RestRequestHandler transformer: transformers) {
-      transformedResponse = transformer.handle(request, transformedResponse);
-      if (transformedResponse.isImmediate()) {
-        return transformedResponse;
-      }
-    }
-    return transformedResponse;
+    RestResponse initialResponse = new DefaultRestResponse(HttpResponseStatus.OK.code(), new HashMap<>(), false);
+    return requestHandler.getRequestHandler().handle(request, initialResponse);
   }
 
   private Observable<? extends Void> respondWithServiceResponse(NettyRequestWrapper request, HttpServerResponse<ByteBuf> response, FoundHandlerDefinition handlerDefinition) {
@@ -99,6 +80,10 @@ public class NettyServiceRequestHandler implements RequestHandler<ByteBuf, ByteB
 
   private Observable<Void> respondWithMethodNotAllowed(HttpServerRequest<ByteBuf> request, HttpServerResponse<ByteBuf> response) {
     return respondWithStatusAndMessage(response, HttpResponseStatus.METHOD_NOT_ALLOWED, Optional.of("Path Requested =>: " + request.getPath() + '\n'));
+  }
+
+  private Observable<Void> respondWithNotFound(HttpServerRequest<ByteBuf> request, HttpServerResponse<ByteBuf> response) {
+    return respondWithStatusAndMessage(response, HttpResponseStatus.NOT_FOUND, Optional.of("Path Requested =>: " + request.getPath() + '\n'));
   }
 
   private Observable<Void> respondWithNotAcceptable(HttpServerResponse<ByteBuf> response) {

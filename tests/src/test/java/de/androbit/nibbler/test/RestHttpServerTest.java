@@ -17,7 +17,6 @@ public abstract class RestHttpServerTest {
   @Before
   public void startServer() {
     int testServerPort = 9003;
-
     RestAssured.port = testServerPort;
 
     httpServer = createServer();

@@ -18,12 +18,18 @@ public class RequestHandlerMatcher {
   PathMatcher pathMatcher = new PathMatcher();
 
   public static class MatchingHandlers {
+    private List<MatchingPathDefinition> matchingPathHandlers;
     List<FoundHandlerDefinition> methodHandlers;
     Optional<FoundHandlerDefinition> contentHandler;
 
-    public MatchingHandlers(List<FoundHandlerDefinition> methodHandlers, Optional<FoundHandlerDefinition> contentHandler) {
+    public MatchingHandlers(List<MatchingPathDefinition> matchingPathHandlers, List<FoundHandlerDefinition> methodHandlers, Optional<FoundHandlerDefinition> contentHandler) {
+      this.matchingPathHandlers = matchingPathHandlers;
       this.methodHandlers = methodHandlers;
       this.contentHandler = contentHandler;
+    }
+
+    public List<MatchingPathDefinition> getMatchingPathHandlers() {
+      return matchingPathHandlers;
     }
 
     public List<FoundHandlerDefinition> getMethodHandlers() {
@@ -42,12 +48,14 @@ public class RequestHandlerMatcher {
   public MatchingHandlers getMatchingHandlers(RestRequest request) {
     Optional<String> acceptHeader = Optional.ofNullable(request.header(Header.Accept.getName()));
 
-    List<FoundHandlerDefinition> methodHandlers = getPathHandlers(request.path().value())
-      .flatMap(matchingMethodHandlers(request.method()))
+    List<MatchingPathDefinition> matchingPathHandlers = getPathHandlers(request.path().value())
+      .collect(Collectors.toList());
+
+    List<FoundHandlerDefinition> methodHandlers = matchingPathHandlers.stream().flatMap(matchingMethodHandlers(request.method()))
       .collect(Collectors.toList());
 
     Optional<FoundHandlerDefinition> contentHandler = getHandlerForContentType(acceptHeader, methodHandlers);
-    return new MatchingHandlers(methodHandlers, contentHandler);
+    return new MatchingHandlers(matchingPathHandlers, methodHandlers, contentHandler);
   }
 
   Function<MatchingPathDefinition, Stream<? extends FoundHandlerDefinition>> matchingMethodHandlers(RestHttpMethod restHttpMethod){
@@ -91,7 +99,7 @@ public class RequestHandlerMatcher {
         PathMatchResult matchResult = pathMatcher.match(path.getPathTemplate(), requestPath);
         if (matchResult.isMatch()) {
           return Stream.of(new MatchingPathDefinition(path, matchResult));
-        }else {
+        } else {
           return Stream.empty();
         }
       });

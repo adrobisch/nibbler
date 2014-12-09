@@ -15,11 +15,11 @@ import io.reactivex.netty.protocol.http.server.HttpServerResponse;
 
 import java.util.Optional;
 
-public class ResponseWriter {
+public class NettyResponseWriter {
 
   final ContentConverters converters;
 
-  public ResponseWriter(ContentConverters converters) {
+  public NettyResponseWriter(ContentConverters converters) {
     this.converters = converters;
   }
 
@@ -43,7 +43,7 @@ public class ResponseWriter {
     } else {
       MediaType responseType = MediaTypes
           .from(response.getHeader(Header.ContentType)
-          .orElse(MediaType.APPLICATION_OCTECT_STREAM.contentType()));
+          .orElse(MediaType.APPLICATION_OCTET_STREAM.contentType()));
 
       if (handledType.isPresent() &&
         !(responseType == handledType.get())) {
@@ -61,14 +61,15 @@ public class ResponseWriter {
   }
 
   protected Optional<TypedOutput> getResponseBody(RestResponse serviceResponse) {
-    Optional<ConvertibleOutput> responseBody = serviceResponse.getBody();
-    if (responseBody.isPresent()) {
-      return Optional.of(getOutput(responseBody.get()));
+    if (serviceResponse.getRawBody().isPresent()) {
+      return serviceResponse.getRawBody();
+    } else if (serviceResponse.getConvertibleBody().isPresent()) {
+      return Optional.of(convert(serviceResponse.getConvertibleBody().get()));
     }
     return Optional.empty();
   }
 
-  private TypedOutput getOutput(ConvertibleOutput responseBody) {
+  private TypedOutput convert(ConvertibleOutput responseBody) {
     if(responseBody.getConverterClass().isPresent()){
       Class<? extends ContentConverter> converterClass = responseBody.getConverterClass().get();
       return convertOutput(responseBody, converters.getConverter(converterClass).get());
@@ -87,7 +88,8 @@ public class ResponseWriter {
   private void writeToResponse(HttpServerResponse<ByteBuf> response, Optional<TypedOutput> typedOutput) {
     if (typedOutput.isPresent()) {
       response.writeBytes(typedOutput.get().getOutput());
-      response.getHeaders().set(Header.ContentType.getName(), typedOutput.get().getMediaType().contentType());
+      String contentType = typedOutput.get().getMediaType().orElse(MediaType.APPLICATION_OCTET_STREAM).contentType();
+      response.getHeaders().set(Header.ContentType.getName(), contentType);
     }
   }
 }

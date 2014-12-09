@@ -4,8 +4,6 @@ import de.androbit.nibbler.http.MediaType;
 import de.androbit.nibbler.http.RestHttpMethod;
 import de.androbit.nibbler.http.RestRequestHandler;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class HandlerDefinition {
@@ -13,9 +11,6 @@ public class HandlerDefinition {
   RestRequestHandler requestHandler;
 
   Optional<MediaType> handledType = Optional.empty();
-
-  List<RestRequestHandler> beforeHandlers = new ArrayList<>();
-  List<RestRequestHandler> afterHandlers = new ArrayList<>();
 
   public RestHttpMethod getRestHttpMethod() {
     return restHttpMethod;
@@ -28,14 +23,6 @@ public class HandlerDefinition {
 
   public RestRequestHandler getRequestHandler() {
     return requestHandler;
-  }
-
-  public List<RestRequestHandler> getBeforeHandlers() {
-    return beforeHandlers;
-  }
-
-  public List<RestRequestHandler> getAfterHandlers() {
-    return afterHandlers;
   }
 
   public HandlerDefinition withRequestHandler(RestRequestHandler requestHandler) {
@@ -52,13 +39,4 @@ public class HandlerDefinition {
     return this;
   }
 
-  public HandlerDefinition filter(RestRequestHandler transformer) {
-    this.beforeHandlers.add(transformer);
-    return this;
-  }
-
-  public HandlerDefinition transform(RestRequestHandler transformer) {
-    this.afterHandlers.add(transformer);
-    return this;
-  }
 }

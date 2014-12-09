@@ -14,6 +14,7 @@
         <module>core</module>
         <module>json</module>
         <module>netty</module>
+        <module>extensions</module>
         <module>examples</module>
         <module>tests</module>
     </modules>

@@ -1,13 +1,16 @@
 package de.androbit.nibbler.http;
 
 import de.androbit.nibbler.converter.ConvertibleOutput;
+import de.androbit.nibbler.converter.TypedOutput;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class DefaultRestResponse implements RestResponse {
-  private Optional<ConvertibleOutput> body = Optional.empty();
+  private Optional<ConvertibleOutput> convertibleBody = Optional.empty();
+  private Optional<TypedOutput> rawBody = Optional.empty();
+
   private Map<Header, String> headers = new HashMap<>();
   private int status = 200;
   private boolean immediate = false;
@@ -21,12 +24,6 @@ public class DefaultRestResponse implements RestResponse {
   @Override
   public int getStatus() {
     return status;
-  }
-
-  @Override
-  public RestResponse body(ConvertibleOutput body) {
-    this.body = Optional.of(body);
-    return this;
   }
 
   @Override
@@ -47,6 +44,18 @@ public class DefaultRestResponse implements RestResponse {
   }
 
   @Override
+  public RestResponse body(ConvertibleOutput body) {
+    this.convertibleBody = Optional.of(body);
+    return this;
+  }
+
+  @Override
+  public RestResponse body(TypedOutput rawBody) {
+    this.rawBody = Optional.of(rawBody);
+    return this;
+  }
+
+  @Override
   public Map<Header, String> getHeaders() {
     return headers;
   }
@@ -62,8 +71,13 @@ public class DefaultRestResponse implements RestResponse {
   }
 
   @Override
-  public Optional<ConvertibleOutput> getBody() {
-    return body;
+  public Optional<ConvertibleOutput> getConvertibleBody() {
+    return convertibleBody;
+  }
+
+  @Override
+  public Optional<TypedOutput> getRawBody() {
+    return rawBody;
   }
 
   @Override

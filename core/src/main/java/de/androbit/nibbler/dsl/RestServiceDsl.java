@@ -14,28 +14,16 @@ public class RestServiceDsl {
     return addPath(new PathDefinition(pathTemplate));
   }
 
-  public HandlerDefinition handle(RestRequestHandler restRequestHandler) {
+  public RestRequestHandler handler(RestRequestHandler requestHandler) {
+    return requestHandler;
+  }
+
+  protected HandlerDefinition handlerDefinition(RestRequestHandler restRequestHandler) {
     return new HandlerDefinition().withRequestHandler(restRequestHandler);
   }
 
-  public HandlerDefinition handle(MediaType mediaType, RestRequestHandler restRequestHandler) {
-    return handle(restRequestHandler).wirhHandledType(mediaType);
-  }
-
-  public HandlerDefinition before(RestRequestHandler restRequestHandler, RestRequestHandler transformer) {
-    return before(new HandlerDefinition().withRequestHandler(restRequestHandler), transformer);
-  }
-
-  public HandlerDefinition before(HandlerDefinition handlerDefinition, RestRequestHandler transformer) {
-    return handlerDefinition.filter(transformer);
-  }
-
-  public HandlerDefinition after(RestRequestHandler restRequestHandler, RestRequestHandler transformer) {
-    return after(new HandlerDefinition().withRequestHandler(restRequestHandler), transformer);
-  }
-
-  public HandlerDefinition after(HandlerDefinition handlerDefinition, RestRequestHandler transformer) {
-    return handlerDefinition.transform(transformer);
+  public HandlerDefinition type(MediaType mediaType, RestRequestHandler restRequestHandler) {
+    return handlerDefinition(restRequestHandler).wirhHandledType(mediaType);
   }
 
   public PathDefinition addPath(PathDefinition pathDefinition) {

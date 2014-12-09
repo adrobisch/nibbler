@@ -2,9 +2,11 @@ package de.androbit.nibbler.converter;
 
 import de.androbit.nibbler.http.MediaType;
 
+import java.util.Optional;
+
 public class TypedOutput {
   final byte[] output;
-  MediaType mediaType;
+  Optional<MediaType> mediaType = Optional.empty();
 
   public TypedOutput(byte[] output) {
     this.output = output;
@@ -14,12 +16,12 @@ public class TypedOutput {
     return output;
   }
 
-  public MediaType getMediaType() {
+  public Optional<MediaType> getMediaType() {
     return mediaType;
   }
 
   public TypedOutput withMediaType(MediaType mediaType) {
-    this.mediaType = mediaType;
+    this.mediaType = Optional.ofNullable(mediaType);
     return this;
   }
 

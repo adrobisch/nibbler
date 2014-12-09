@@ -43,16 +43,16 @@ public class ContentNegotiationTest extends RestHttpServerTest {
     RestServiceBuilder jsonService = new RestServiceBuilder() {
       @Override
       public void define() {
-        RestRequestHandler jsonHandler = (in, out) -> {
+        RestRequestHandler jsonHandler = handler((in, out) -> {
           return out.body("\"pong\"")
             .header(Header.ContentType, MediaType.APPLICATION_JSON.contentType());
-        };
+        });
 
         path("/handles-json")
-          .get(handle(MediaType.APPLICATION_JSON, jsonHandler));
+          .get(type(MediaType.APPLICATION_JSON, jsonHandler));
 
         path("/json-not-acceptable")
-          .get(handle(MediaType.TEXT_PLAIN, (in, out) -> out));
+          .get(type(MediaType.TEXT_PLAIN, (in, out) -> out));
       }
     };
 
