@@ -46,7 +46,7 @@ public class RequestHandlerMatcher {
   }
 
   public MatchingHandlers getMatchingHandlers(RestRequest request) {
-    Optional<String> acceptHeader = Optional.ofNullable(request.header(Header.Accept.getName()));
+    Optional<String> acceptHeader = Optional.ofNullable(request.header(Header.Accept.name()));
 
     List<MatchingPathDefinition> matchingPathHandlers = getPathHandlers(request.path().value())
       .collect(Collectors.toList());

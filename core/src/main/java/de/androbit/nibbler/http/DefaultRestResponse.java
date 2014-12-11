@@ -2,10 +2,12 @@ package de.androbit.nibbler.http;
 
 import de.androbit.nibbler.converter.ConvertibleOutput;
 import de.androbit.nibbler.converter.TypedOutput;
+import de.androbit.nibbler.handler.BodyHandlers;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class DefaultRestResponse implements RestResponse {
   private Optional<ConvertibleOutput> convertibleBody = Optional.empty();
@@ -39,8 +41,8 @@ public class DefaultRestResponse implements RestResponse {
   }
 
   @Override
-  public RestResponse body(Object body) {
-    return body(new ConvertibleOutput(body));
+  public RestResponse body(String body) {
+    return this.with(BodyHandlers.text(body));
   }
 
   @Override
@@ -68,6 +70,11 @@ public class DefaultRestResponse implements RestResponse {
   @Override
   public boolean isImmediate() {
     return immediate;
+  }
+
+  @Override
+  public RestResponse with(Function<RestResponse, RestResponse> responseFunction) {
+    return responseFunction.apply(this);
   }
 
   @Override

@@ -38,6 +38,7 @@ public class NettyServiceRequestHandler implements RequestHandler<ByteBuf, ByteB
       logger.debug("Server => Request: " + requestPath);
       return request.getContent().flatMap(processRequest(request, response));
     } catch (Throwable e) {
+      logger.error("error during request: ", e);
       return respondWithServerError(request, response, e);
     }
   }
@@ -93,7 +94,7 @@ public class NettyServiceRequestHandler implements RequestHandler<ByteBuf, ByteB
   private Observable<Void> respondWithStatusAndMessage(HttpServerResponse<ByteBuf> response, HttpResponseStatus status, Optional<String> message) {
     response.setStatus(status);
     response.writeString(message.orElse(""));
-    response.getHeaders().set(Header.ContentType.getName(), MediaType.TEXT_PLAIN.contentType());
+    response.getHeaders().set(Header.ContentType.name(), MediaType.TEXT_PLAIN.contentType());
     return response.close();
   }
 }

@@ -7,7 +7,6 @@ import de.androbit.nibbler.converter.TypedOutput;
 import de.androbit.nibbler.dsl.HandlerDefinition;
 import de.androbit.nibbler.http.Header;
 import de.androbit.nibbler.http.MediaType;
-import de.androbit.nibbler.http.MediaTypes;
 import de.androbit.nibbler.http.RestResponse;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -32,7 +31,7 @@ public class NettyResponseWriter {
     writeToResponse(response, responseBody);
 
     serviceResponseWithContent.getHeaders()
-      .forEach((header, value) -> response.getHeaders().set(header.getName(), value));
+      .forEach((header, value) -> response.getHeaders().set(header.name(), value));
 
     return serviceResponseWithContent;
   }
@@ -41,12 +40,12 @@ public class NettyResponseWriter {
     if (handledType.isPresent() && !responseBody.isPresent()) {
       return respondNotAcceptable(response, handledType, responseBody);
     } else {
-      MediaType responseType = MediaTypes
-          .from(response.getHeader(Header.ContentType)
-          .orElse(MediaType.APPLICATION_OCTET_STREAM.contentType()));
+      MediaType responseType = MediaType
+          .valueOf(response.getHeader(Header.ContentType)
+            .orElse(MediaType.APPLICATION_OCTET_STREAM.contentType()));
 
       if (handledType.isPresent() &&
-        !(responseType == handledType.get())) {
+        !responseType.equals(handledType.get())) {
         return respondNotAcceptable(response, handledType, responseBody);
       }
     }
@@ -89,7 +88,7 @@ public class NettyResponseWriter {
     if (typedOutput.isPresent()) {
       response.writeBytes(typedOutput.get().getOutput());
       String contentType = typedOutput.get().getMediaType().orElse(MediaType.APPLICATION_OCTET_STREAM).contentType();
-      response.getHeaders().set(Header.ContentType.getName(), contentType);
+      response.getHeaders().set(Header.ContentType.name(), contentType);
     }
   }
 }

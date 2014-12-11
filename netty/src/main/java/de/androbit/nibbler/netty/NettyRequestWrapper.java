@@ -8,10 +8,7 @@ import io.reactivex.netty.protocol.http.server.HttpServerRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NettyRequestWrapper implements RestRequest {
 
@@ -45,8 +42,18 @@ public class NettyRequestWrapper implements RestRequest {
   }
 
   @Override
+  public Optional<String> pathParam(String paramName) {
+    return pathParams().get(paramName);
+  }
+
+  @Override
   public Params queryParams() {
     return new Params(request.getQueryParameters());
+  }
+
+  @Override
+  public Optional<String> queryParam(String paramName) {
+    return queryParams().get(paramName);
   }
 
   @Override

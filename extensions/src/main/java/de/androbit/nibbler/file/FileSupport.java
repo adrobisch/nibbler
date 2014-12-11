@@ -1,8 +1,8 @@
 package de.androbit.nibbler.file;
 
 import de.androbit.nibbler.converter.TypedOutput;
+import de.androbit.nibbler.handler.BodyHandlers;
 import de.androbit.nibbler.http.MediaType;
-import de.androbit.nibbler.http.MediaTypes;
 import de.androbit.nibbler.http.RestResponse;
 import org.apache.tika.Tika;
 
@@ -16,6 +16,13 @@ public class FileSupport {
 
   public static RestResponse classPathResource(String resourcePath, RestResponse restResponse) {
     InputStream resourceStream = FileSupport.class.getResourceAsStream(resourcePath);
+
+    if (resourceStream == null) {
+      return restResponse
+        .status(404)
+        .with(BodyHandlers.text("resource not found in classpath: " + resourcePath));
+    }
+
     MediaType from = getMediaType(resourcePath);
     TypedOutput output = new TypedOutput(readBytes(resourceStream)).withMediaType(from);
     restResponse.body(output);
@@ -24,7 +31,7 @@ public class FileSupport {
 
   public static MediaType getMediaType(String filePath) {
     String detectedType = tika.detect(filePath);
-    return MediaTypes.from(detectedType);
+    return MediaType.valueOf(detectedType);
   }
 
   private static byte[] readBytes(java.io.InputStream stream) {
