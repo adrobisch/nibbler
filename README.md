@@ -27,8 +27,8 @@ import static de.androbit.nibbler.json.JsonSupport.json;
 public class JsonExample extends RestServiceBuilder {
   @Override
   public void define() {
-    path("/json").get((in, out) -> {
-      return out.body(json("Hello World!"));
+    path("/json").get((request, response) -> {
+      return response.with(json("Hello World!"));
     });
   }
 
