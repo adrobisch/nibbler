@@ -23,6 +23,13 @@ public class PathMatcherTest {
   }
 
   @Test
+  public void shouldMatchExactly() {
+    PathMatchResult matchResult = new PathMatcher().match("/foo", "/foo/123");
+
+    assertThat(matchResult.isMatch()).isFalse();
+  }
+
+  @Test
   public void shouldIgnoreTrailingSlash() {
     PathMatchResult trailingInTemplateAndPath = new PathMatcher().match("/foo/{param}/", "/foo/123/");
     PathMatchResult trailingInTemplate = new PathMatcher().match("/foo/{param}/", "/foo/123");

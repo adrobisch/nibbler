@@ -39,4 +39,11 @@ public class HandlerDefinition {
     return this;
   }
 
+  @Override
+  public String toString() {
+    return "HandlerDefinition{" +
+      "restHttpMethod=" + restHttpMethod +
+      ", handledType=" + handledType +
+      '}';
+  }
 }

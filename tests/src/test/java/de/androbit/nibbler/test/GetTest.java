@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.equalTo;
 
 public class GetTest extends RestHttpServerTest {
   @Test
@@ -18,6 +17,16 @@ public class GetTest extends RestHttpServerTest {
     .then()
       .assertThat()
       .statusCode(404);
+  }
+
+  @Test
+  public void shouldReturnMethodNotAllowedOnUnhandledMethod() {
+    given()
+      .when()
+      .delete("/ping")
+      .then()
+      .assertThat()
+      .statusCode(405);
   }
 
   @Override

@@ -5,6 +5,7 @@ import de.androbit.nibbler.dsl.PathDefinition;
 import de.androbit.nibbler.http.uri.PathMatchResult;
 import de.androbit.nibbler.http.uri.PathMatcher;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -62,7 +63,7 @@ public class RequestHandlerMatcher {
     return pathDefinition -> {
       return pathDefinition.getPathDefinition()
         .getMethodHandlers()
-        .get(restHttpMethod)
+        .getOrDefault(restHttpMethod, Collections.<HandlerDefinition>emptyList())
         .stream()
         .filter(handlerWithMethod(restHttpMethod))
         .flatMap(handlerDefinition -> Stream.of(new FoundHandlerDefinition(pathDefinition.getMatchResult(), handlerDefinition)));

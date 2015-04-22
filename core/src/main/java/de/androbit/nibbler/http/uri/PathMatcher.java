@@ -18,6 +18,10 @@ public class PathMatcher {
   }
 
   protected boolean matchSegments(String[] pathSegments, String[] templateSegments, Map<String, String> pathParams) {
+    if (pathSegments.length > templateSegments.length) {
+      return false;
+    }
+
     for (int segmentIndex = 0; segmentIndex < templateSegments.length; segmentIndex++) {
       if (segmentIndex >= pathSegments.length) {
         return false;
